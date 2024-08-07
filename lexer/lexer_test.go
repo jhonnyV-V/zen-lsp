@@ -48,7 +48,8 @@ func TestNewToken(t *testing.T) {
 		{token.PRINT, "print", 12},
 		{token.THE, "the", 12},
 		{token.STRING, "keyring", 12},
-		{token.EOF, "", 13},
+		{token.POUND, "#", 14},
+		{token.EOF, "", 14},
 	}
 
 	l := New(input)
@@ -66,7 +67,7 @@ func TestNewToken(t *testing.T) {
 		}
 
 		if tok.Line != tt.expectedLine {
-			t.Fatalf("tests[%d] - line wrong. expected=%q, got=%q", i, tt.expectedLine, tok.Line)
+			t.Fatalf("tests[%d] - line wrong. expected=%d, got=%d", i, tt.expectedLine, tok.Line)
 		}
 	}
 }
