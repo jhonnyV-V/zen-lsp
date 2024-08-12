@@ -116,6 +116,9 @@ func (l *Lexer) NextToken() TokenWithPos {
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
+		} else if isVersionNumber(l.ch, l.peekChar()) {
+			tok.Type = token.STRING
+			tok.Literal = l.readVersion()
 		} else {
 			tok = token.NewToken(token.ILLEGAL, l.ch)
 		}
@@ -153,10 +156,6 @@ func (l *Lexer) peekChar() byte {
 	}
 }
 
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
-
 func (l *Lexer) readString() string {
 	position := l.position + 1
 	for {
@@ -175,4 +174,23 @@ func (l *Lexer) ignoreLine() {
 		l.ReadChar()
 		pos = l.position
 	}
+}
+
+func (l *Lexer) readVersion() string {
+	position := l.position
+	for {
+		l.ReadChar()
+		if l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[position:l.position]
+}
+
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func isVersionNumber(ch byte, peekCh byte) bool {
+	return '0' <= ch && ch <= '9' && peekCh == '.'
 }

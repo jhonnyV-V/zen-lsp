@@ -60,10 +60,17 @@ const (
 	AS       = "AS"
 	KNOWN    = "KNOWN"
 	KEYRING  = "KEYRING"
+	RULE     = "RULE"
 
 	//Scenarios
 	ECDH     = "ECDH"
 	ETHEREUM = "ETHEREUM"
+
+	//RULES
+	CHECK   = "CHECK"
+	VERSION = "VERSION"
+	UNKNOWN = "UNKNOWN"
+	IGNORE  = "IGNORE"
 )
 
 func NewToken(tokenType TokenType, ch byte) Token {
@@ -90,6 +97,7 @@ var keywords = map[string]TokenType{
 	"known":    KNOWN,
 	"data":     DATA,
 	"keyring":  KEYRING,
+	"Rule":     RULE,
 }
 
 var Scenarios = map[string]TokenType{
@@ -97,8 +105,22 @@ var Scenarios = map[string]TokenType{
 	"ethereum": ETHEREUM,
 }
 
+var Rules = map[string]TokenType{
+	"check":   CHECK,
+	"version": VERSION,
+	"unknown": UNKNOWN,
+	"ignore":  IGNORE,
+}
+
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
+		return tok
+	}
+
+	if tok := LookupScenario(ident); tok != ILLEGAL {
+		return tok
+	}
+	if tok := LookupRules(ident); tok != ILLEGAL {
 		return tok
 	}
 	return IDENT
@@ -106,6 +128,13 @@ func LookupIdent(ident string) TokenType {
 
 func LookupScenario(scenario string) TokenType {
 	if tok, ok := Scenarios[scenario]; ok {
+		return tok
+	}
+	return ILLEGAL
+}
+
+func LookupRules(rule string) TokenType {
+	if tok, ok := Rules[rule]; ok {
 		return tok
 	}
 	return ILLEGAL
